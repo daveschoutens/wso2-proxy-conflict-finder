@@ -1,10 +1,16 @@
 #!/bin/bash
-CAR_FILES_DIR=~/stuff/copilot/wso2esb/car-deployments/int-esb/test-esb
-PROXY_SERVICES_DIR=../proxy-services
-OUTPUT=output.txt
 
-INCLUDES=./includes
-TMP=./.tmp
+if [[ -z "$1" || -z "$2" || ! -d "$1" || ! -d "$2" ]]; then
+    echo "USAGE: $0 <directory of CAR files> <directory of proxy XML files>"
+    exit 0
+fi
+
+CAR_FILES_DIR=$1
+PROXY_SERVICES_DIR=$2
+
+SCRIPT_PATH=$(dirname $(realpath -s $0))
+INCLUDES=$SCRIPT_PATH/includes
+TMP=$SCRIPT_PATH/.tmp
 UNPACKED_CARS_DIR=$TMP/unpacked-cars
 NORMALIZED_PROXY_SERVICES_DIR=$TMP/normalized-proxy-services/
 
@@ -33,10 +39,7 @@ for file in $(find $UNPACKED_CARS_DIR -name *.xml); do
         grep -o "[^/]*.xml" >> $TMP/kill-list                          # and stick them all in the kill-list file
 done
 
-# Sort the kill-list and 'publish' it
-echo "Analysis complete.  List of conflicts saved to file: $OUTPUT."
-cat $TMP/kill-list | sort > $OUTPUT
-
-echo "Outputting list:"
+# Sort the kill-list and display it
+echo "Analysis complete."
 echo "----------------"
-cat $OUTPUT
+cat $TMP/kill-list | sort
